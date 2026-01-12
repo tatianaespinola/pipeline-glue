@@ -1,0 +1,52 @@
+name: Deploy AWS Glue Job
+
+on:
+  push:
+    branches:
+      - "*"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::458144597632:role/role-github
+          aws-region: us-east-1
+
+      # 🚀 Upload automático do script para o bucket correto
+      - name: Upload ETL script to S3
+        run: |
+          aws s3 cp app/main.py \
+            s3://armazenar-tabelas/app/main.py
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.6
+
+      - name: Terraform Init
+        working-directory: terraform
+        run: terraform init
+
+      - name: Terraform Plan
+        working-directory: terraform
+        run: |
+          terraform plan \
+            -var="script_bucket=armazenar-tabelas" \
+            -var="glue_role_arn=arn:aws:iam::458144597632:role/data-engineering-inline-role"
+
+      - name: Terraform Apply
+        working-directory: terraform
+        run: |
+          terraform apply -auto-approve \
+            -var="script_bucket=armazenar-tabelas" \
