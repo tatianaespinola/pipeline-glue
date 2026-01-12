@@ -35,6 +35,7 @@ jobs:
           terraform_version: 1.6.6
 
       - name: Terraform Init
+        working-directory: infra
         run: terraform init
 
       - name: Terraform Plan
