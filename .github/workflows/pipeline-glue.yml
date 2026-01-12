@@ -38,12 +38,15 @@ jobs:
         run: terraform init
 
       - name: Terraform Plan
+        working-directory: infra
         run: |
           terraform plan \
             -var="script_bucket=armazenar-tabelas" \
             -var="glue_role_arn=arn:aws:iam::458144597632:role/data-engineering-inline-role"
 
       - name: Terraform Apply
+        working-directory: infra
         run: |
           terraform apply -auto-approve \
             -var="script_bucket=armazenar-tabelas" \
+            -var="glue_role_arn=arn:aws:iam::458144597632:role/data-engineering-inline-role"
