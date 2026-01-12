@@ -11,9 +11,10 @@ variable "script_bucket" {
 }
 
 variable "script_key" {
-  default = "etl/usuarios_filtrados_etl.py"
+  default = "app/main.py"
 }
 
 variable "glue_role_arn" {
   description = "ARN da role existente usada pelo Glue Job"
+  default     = "data-engineering-inline-role"
 }
